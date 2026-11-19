@@ -28,6 +28,9 @@ public class Usuario {
             insertable = false, updatable = false)
     private LocalDateTime dataCadastro;
 
+    @Column(name = "ROLE", nullable = false, length = 20)
+    private String role = "CIDADAO";
+
     public Usuario() {
     }
 
@@ -73,5 +76,13 @@ public class Usuario {
 
     public LocalDateTime getDataCadastro() {
         return dataCadastro;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
