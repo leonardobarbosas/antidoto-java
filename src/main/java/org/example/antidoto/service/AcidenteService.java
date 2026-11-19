@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.example.antidoto.messaging.AcidenteProducer;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -29,14 +30,18 @@ public class AcidenteService {
     private final UsuarioRepository usuarioRepository;
     private final AnimalRepository animalRepository;
 
+    private final AcidenteProducer acidenteProducer;
+
     public AcidenteService(
             AcidenteRepository acidenteRepository,
             UsuarioRepository usuarioRepository,
-            AnimalRepository animalRepository
-    ) {
+            AnimalRepository animalRepository,
+            AcidenteProducer acidenteProducer) {
+
         this.acidenteRepository = acidenteRepository;
         this.usuarioRepository = usuarioRepository;
         this.animalRepository = animalRepository;
+        this.acidenteProducer = acidenteProducer;
     }
 
     private AcidenteResponseDTO converter(Acidente acidente) {
@@ -118,6 +123,8 @@ public class AcidenteService {
         Acidente salvo = acidenteRepository.saveAndFlush(acidente);
 
         entityManager.refresh(salvo);
+
+        acidenteProducer.publicarAcidente(salvo.getId());
 
         return converter(salvo);
     }
